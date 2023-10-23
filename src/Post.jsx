@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 const Post = props => {
   const { id, title, author, admin, deletePost } = props;
+  const navigate = useNavigate();
   const handleDelete = () => {
     deletePost(id);
   };
-  // no hice el edit de posts
+  const handleEdit = () => {
+    navigate(`/edit/${id}`)
+  }
   return (
     <div className="post">
       <p style={{marginBottom: '5px'}} className="post-author">Por {author}</p>
@@ -15,7 +18,7 @@ const Post = props => {
       </Link>
       { admin && <>
         <button onClick={handleDelete}><i className="fa-solid fa-trash"></i></button>
-        <button><i className="fa-solid fa-pencil"></i></button>
+        <button onClick={handleEdit}><i className="fa-solid fa-pencil"></i></button>
         </>
       }
     </div>

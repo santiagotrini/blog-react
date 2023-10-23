@@ -1,3 +1,4 @@
+// imports
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchPost, fetchComments } from './helpers.js';
@@ -5,10 +6,15 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'; 
 
 const FullPost = props => {
+
+  // props, params & fetch data
   const { admin } = props;
   const { id } = useParams();
   const post = fetchPost(id);
+
+  // hooks
   const [comments, setComments] = useState([]);
+  
   useEffect(() => {
     let comments = fetchComments(id);
     setComments(comments);
@@ -19,29 +25,32 @@ const FullPost = props => {
     text: ''
   });
 
+  // event handlers
   const handleChange = e => {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
     setFormData({...formData, [name]: value });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
     const newComment = formData;
-    console.log(comments.length);
     if (comments.length === 0) newComment.id = 1;
     else newComment.id = comments[0].id + 1;
     const newComments = [newComment, ...comments];
+    // state & localStorage save
     setComments(newComments);
     localStorage.setItem(`comments/${id}`, JSON.stringify(newComments));
+    // blank
     setFormData({
       author: '',
       text: ''
     });
   };
 
+  // destructuring
   const { title, author, content } = post;
 
+  // render
   return (
     <div className="post-page">
       <p className="post-author">Escrito por {author}</p>
@@ -77,23 +86,28 @@ const FullPost = props => {
 
 export default FullPost;
 
+
+// Comment component
 const Comment = props => {
+
+  // props & destructuring
   const { admin, comment, postId, comments, setComments } = props;
   const { text, author, id } = comment;
 
+  // event handler
   const handleDelete = () => {
     let newComments = comments.filter(c => c.id != id);
     localStorage.setItem(`comments/${postId}`, JSON.stringify(newComments));
     setComments(newComments);
   };
-  // no hice el edit de comentarios
+
+  // render
   return (
     <div>
       <h3>{author} dice:</h3>
       <p>{text}</p>
       {admin && <div className="controls">
         <button onClick={handleDelete}><i className="fa-solid fa-trash"></i></button>
-        <button><i className="fa-solid fa-pencil"></i></button>
       </div>}
     </div>
   )
